@@ -21,7 +21,7 @@ import static org.bytedeco.javacpp.opencv_core.Mat;
 /**
  * Created by maroderi on 6/20/16.
  */
-public class FrameExperienceMemory implements ExperienceMemory, StateVectorizor, StateMapping, Serializable {
+public class FrameExperienceMemory implements SavableExperienceMemory, StateVectorizor, StateMapping, Serializable {
 
     public transient BytePointer frameMemory;
     public transient PreProcessor preProcessor;

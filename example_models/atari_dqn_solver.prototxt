@@ -1,4 +1,4 @@
-net: "atari_dqn.prototxt"
+net: "example_models/atari_dqn.prototxt"
 solver_type: RMSPROP
 momentum: 0.95
 base_lr: 0.00025

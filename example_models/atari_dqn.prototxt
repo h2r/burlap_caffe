@@ -1,3 +1,4 @@
+# The layer to put the state frames in
 layer {
   name: "state_input_layer"
   type: "MemoryData"
@@ -10,6 +11,8 @@ layer {
     width: 84
   }
 }
+# The layer to put the target Q-values.
+# Set channels to the number of actions
 layer {
   name: "target_input_layer"
   type: "MemoryData"
@@ -17,11 +20,13 @@ layer {
   top: "dummy2"
   memory_data_param {
     batch_size: 32
-    channels: 4
+    channels: 3
     height: 1
     width: 1
   }
 }
+# The action filter input (a set of boolean vectors that are 1 for the input action and 0 elsewhere).
+# Set channels to the number of actions
 layer {
   name: "filter_input_layer"
   type: "MemoryData"
@@ -29,7 +34,7 @@ layer {
   top: "dummy3"
   memory_data_param {
     batch_size: 32
-    channels: 4
+    channels: 3
     height: 1
     width: 1
   }
@@ -145,13 +150,15 @@ layer {
   top: "ip1"
 }
 
+# Output Q-Values.
+# Set num_output to be the number of actions.
 layer {
   name: "ip2_layer"
   type: "InnerProduct"
   bottom: "ip1"
   top: "q_values"
   inner_product_param {
-    num_output: 4
+    num_output: 3
     weight_filler {
       type: "xavier"
     }

@@ -62,21 +62,22 @@ public class AtariDQN extends TrainingHelper {
         int totalTrainingSteps = 50000000;
 
         // ALE Paths
-        String alePath = "/home/maroderi/projects/Arcade-Learning-Environment/ale";
-        String ROM = "/home/maroderi/projects/atari_roms/breakout.bin";
+        String alePath = "/path/to/atari/executable";
+        String romPath = "/path/to/atari/rom/file";
 
         // Caffe solver file
-        String SOLVER_FILE = "atari_dqn_solver.prototxt";
+        String solverFile = "example_models/atari_dqn_solver.prototxt";
 
         // Load Caffe
         Loader.load(Caffe.class);
 
         // Create the domain
+        // NOTE: this action subset is for Pong and only has 3 actions
         ALEDomainGenerator domGen = new ALEDomainGenerator(ALEDomainGenerator.pongActionSet());
         SADomain domain = domGen.generateDomain();
 
         // Create the ALEEnvironment and visualizer
-        ALEEnvironment env = new ALEEnvironment(alePath, ROM, frameSkip);
+        ALEEnvironment env = new ALEEnvironment(alePath, romPath, frameSkip);
         ALEVisualExplorer exp = new ALEVisualExplorer(domain, env, ALEVisualizer.create());
         exp.initGUI();
         exp.startLiveStatePolling(1000/60);
@@ -92,11 +93,15 @@ public class AtariDQN extends TrainingHelper {
                 new FrameExperienceMemory(10000, maxHistoryLength, new ALEPreProcessor(), actionSet);
 
 
-        DQN dqn = new DQN(SOLVER_FILE, actionSet, trainingExperienceMemory, gamma);
+        // Initialize the DQN with the solver file.
+        // NOTE: this Caffe architecture is made for 3 actions (the number of actions in Pong)
+        DQN dqn = new DQN(solverFile, actionSet, trainingExperienceMemory, gamma);
 
+        // Create the policies
         Policy learningPolicy = new AnnealedEpsilonGreedy(dqn, epsilonStart, epsilonEnd, epsilonAnnealDuration);
         Policy testPolicy = new EpsilonGreedy(dqn, testEpsilon);
 
+        // Setup the learner
         DeepQLearner deepQLearner = new DeepQLearner(domain, gamma, replayStartSize, learningPolicy, dqn, trainingExperienceMemory);
         deepQLearner.setExperienceReplay(trainingExperienceMemory, dqn.batchSize);
 

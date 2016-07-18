@@ -2,10 +2,12 @@ package edu.brown.cs.burlap.learners;
 
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.RandomPolicy;
+import burlap.behavior.singleagent.learning.tdmethods.vfa.ApproximateQLearning;
 import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
+import edu.brown.cs.burlap.experiencereplay.SavableExperienceMemory;
 import edu.brown.cs.burlap.policies.StatefulPolicy;
 import edu.brown.cs.burlap.vfa.DQN;
 
@@ -74,7 +76,6 @@ public class DeepQLearner extends ApproximateQLearning {
         this.stepsSinceStale = 1;
     }
 
-    @Override
     public void saveLearningState(String filePrefix) {
         // Save meta data
         String dataFilename = filePrefix + "_learner.data";
@@ -90,13 +91,14 @@ public class DeepQLearner extends ApproximateQLearning {
         }
 
         // Save experience memory
-        memory.saveMemory(filePrefix);
+        if (memory instanceof SavableExperienceMemory) {
+            ((SavableExperienceMemory) memory).saveMemory(filePrefix);
+        }
 
         // Save Caffe data
         ((DQN) vfa).saveLearningState(filePrefix);
     }
 
-    @Override
     public void loadLearningState(String filePrefix) {
 
         // Load meta-data
@@ -119,7 +121,9 @@ public class DeepQLearner extends ApproximateQLearning {
         }
 
         // Load experience memory
-        memory.loadMemory(filePrefix);
+        if (memory instanceof SavableExperienceMemory) {
+            ((SavableExperienceMemory) memory).loadMemory(filePrefix);
+        }
 
         // Load Caffe solver state
         ((DQN)vfa).loadLearningState(filePrefix);

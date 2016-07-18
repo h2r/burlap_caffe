@@ -1,4 +1,4 @@
-net: "grid_world_dqn.prototxt"
+net: "example_models/grid_world_dqn.prototxt"
 solver_type: RMSPROP
 momentum: 0.95
 base_lr: 0.01

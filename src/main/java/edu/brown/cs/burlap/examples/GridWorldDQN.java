@@ -2,6 +2,7 @@ package edu.brown.cs.burlap.examples;
 
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.singleagent.learning.experiencereplay.FixedSizeMemory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
 import burlap.domain.singleagent.gridworld.state.GridAgent;
@@ -23,7 +24,6 @@ import burlap.shell.visual.VisualExplorer;
 import burlap.statehashing.HashableStateFactory;
 import burlap.statehashing.simple.SimpleHashableStateFactory;
 import edu.brown.cs.burlap.action.ActionSet;
-import edu.brown.cs.burlap.experiencereplay.FixedSizeMemory;
 import edu.brown.cs.burlap.learners.DeepQLearner;
 import edu.brown.cs.burlap.policies.AnnealedEpsilonGreedy;
 import edu.brown.cs.burlap.vfa.DQN;
