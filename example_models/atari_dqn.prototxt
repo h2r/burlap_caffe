@@ -1,0 +1,181 @@
+layer {
+  name: "state_input_layer"
+  type: "MemoryData"
+  top: "states"
+  top: "dummy1"
+  memory_data_param {
+    batch_size: 32
+    channels: 4
+    height: 84
+    width: 84
+  }
+}
+layer {
+  name: "target_input_layer"
+  type: "MemoryData"
+  top: "target"
+  top: "dummy2"
+  memory_data_param {
+    batch_size: 32
+    channels: 4
+    height: 1
+    width: 1
+  }
+}
+layer {
+  name: "filter_input_layer"
+  type: "MemoryData"
+  top: "filter"
+  top: "dummy3"
+  memory_data_param {
+    batch_size: 32
+    channels: 4
+    height: 1
+    width: 1
+  }
+}
+layer {
+  name: "silence_layer"
+  type: "Silence"
+  bottom: "dummy1"
+  bottom: "dummy2"
+  bottom: "dummy3"
+}
+layer {
+  name: "flatten_filter"
+  type: "Flatten"
+  bottom: "filter"
+  top: "flattened_filter"
+}
+layer {
+  name: "conv1_layer"
+  type: "Convolution"
+  bottom: "states"
+  top: "conv1"
+  convolution_param {
+    num_output: 32
+    kernel_size: 8
+    stride: 4
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv1_relu_layer"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "conv1"
+}
+
+layer {
+  name: "conv2_layer"
+  type: "Convolution"
+  bottom: "conv1"
+  top: "conv2"
+  convolution_param {
+    num_output: 64
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv2_relu_layer"
+  type: "ReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+
+layer {
+  name: "conv3_layer"
+  type: "Convolution"
+  bottom: "conv2"
+  top: "conv3"
+  convolution_param {
+    num_output: 64
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "conv3_relu_layer"
+  type: "ReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+
+layer {
+  name: "ip1_layer"
+  type: "InnerProduct"
+  bottom: "conv3"
+  top: "ip1"
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "ip1_relu_layer"
+  type: "ReLU"
+  bottom: "ip1"
+  top: "ip1"
+}
+
+layer {
+  name: "ip2_layer"
+  type: "InnerProduct"
+  bottom: "ip1"
+  top: "q_values"
+  inner_product_param {
+    num_output: 4
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "eltwise_layer"
+  type: "Eltwise"
+  bottom: "q_values"
+  bottom: "flattened_filter"
+  top: "filtered_q_values"
+  eltwise_param {
+    operation: PROD
+  }
+}
+layer {
+  name: "loss"
+  type: "EuclideanLoss"
+  bottom: "filtered_q_values"
+  bottom: "target"
+  top: "loss"
+}

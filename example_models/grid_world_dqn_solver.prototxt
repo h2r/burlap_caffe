@@ -1,0 +1,9 @@
+net: "grid_world_dqn.prototxt"
+solver_type: RMSPROP
+momentum: 0.95
+base_lr: 0.01
+lr_policy: "inv"
+gamma: 0.0001
+stepsize: 1000000
+max_iter: 2000000
+display: 100000

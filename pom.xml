@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>edu.brown.cs.burlap</groupId>
+    <artifactId>burlap_caffe</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <burlap.version>3.0.0</burlap.version>
+    </properties>
+
+    <name>burlap_caffe</name>
+    <description>A BURLAP library extension for using Caffe for deep reinforcement learning.</description>
+    <url>https://github.com/h2r/burlap_caffe</url>
+
+    <developers>
+        <developer>
+            <name>Melrose Roderick</name>
+            <email>melrose_roderick@brown.edu</email>
+            <organization>Brown University</organization>
+            <organizationUrl>http://www.brown.edu</organizationUrl>
+        </developer>
+    </developers>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>edu.brown.cs.burlap</groupId>
+            <artifactId>burlap</artifactId>
+            <version>${burlap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.brown.cs.burlap</groupId>
+            <artifactId>burlap_ale</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacpp</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.1.0-1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>caffe</artifactId>
+            <version>rc3-1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+    </dependencies>
+
+
+</project>
