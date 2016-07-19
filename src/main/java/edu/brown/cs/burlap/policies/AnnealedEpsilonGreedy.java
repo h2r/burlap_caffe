@@ -15,6 +15,9 @@ public class AnnealedEpsilonGreedy extends EpsilonGreedy implements StatefulPoli
     protected double epsilonStep;
     protected int annealingTime;
 
+    public AnnealedEpsilonGreedy(double epsilonStart, double epsilonEnd, int annealingTime) {
+        this(null, epsilonStart, epsilonEnd, annealingTime);
+    }
     public AnnealedEpsilonGreedy(QProvider planner, double epsilonStart, double epsilonEnd, int annealingTime) {
         super(planner, epsilonStart);
 

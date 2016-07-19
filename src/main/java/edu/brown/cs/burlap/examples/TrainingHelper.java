@@ -121,6 +121,7 @@ public abstract class TrainingHelper {
         System.out.println("Running Test Set...");
         double totalTestReward = 0;
         for (int n = 1; n <= numTestEpisodes; n++) {
+            env.resetEnvironment();
             Episode e = PolicyUtils.rollout(testPolicy, env, maxEpisodeSteps);
 
             double totalReward = 0;

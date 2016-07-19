@@ -2,6 +2,7 @@ package edu.brown.cs.burlap.examples;
 
 import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import edu.brown.cs.burlap.ALEDomainGenerator;
@@ -98,12 +99,17 @@ public class AtariDQN extends TrainingHelper {
         DQN dqn = new DQN(solverFile, actionSet, trainingExperienceMemory, gamma);
 
         // Create the policies
-        Policy learningPolicy = new AnnealedEpsilonGreedy(dqn, epsilonStart, epsilonEnd, epsilonAnnealDuration);
-        Policy testPolicy = new EpsilonGreedy(dqn, testEpsilon);
+        SolverDerivedPolicy learningPolicy =
+                new AnnealedEpsilonGreedy(epsilonStart, epsilonEnd, epsilonAnnealDuration);
+        SolverDerivedPolicy testPolicy = new EpsilonGreedy(testEpsilon);
 
         // Setup the learner
         DeepQLearner deepQLearner = new DeepQLearner(domain, gamma, replayStartSize, learningPolicy, dqn, trainingExperienceMemory);
         deepQLearner.setExperienceReplay(trainingExperienceMemory, dqn.batchSize);
+
+        // Set the QProvider for the policies
+        learningPolicy.setSolver(deepQLearner);
+        testPolicy.setSolver(deepQLearner);
 
         // Setup helper
         TrainingHelper helper =

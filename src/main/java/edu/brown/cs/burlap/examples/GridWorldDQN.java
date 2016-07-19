@@ -1,7 +1,7 @@
 package edu.brown.cs.burlap.examples;
 
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.policy.Policy;
+import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.behavior.singleagent.learning.experiencereplay.FixedSizeMemory;
 import burlap.domain.singleagent.gridworld.GridWorldDomain;
 import burlap.domain.singleagent.gridworld.GridWorldVisualizer;
@@ -90,6 +90,7 @@ public class GridWorldDQN {
         int memorySize = 1000000;
         double epsilonStart = 1;
         double epsilonEnd = 0.1;
+        double testEpsilon = 0.05;
         int epsilonAnnealDuration = 1000000;
 
         // Load Caffe
@@ -99,14 +100,18 @@ public class GridWorldDQN {
         GridWorldDQN gridWorldDQN = new GridWorldDQN(gamma);
 
         // Create the policies
-        Policy learningPolicy =
-                new AnnealedEpsilonGreedy(gridWorldDQN.dqn, epsilonStart, epsilonEnd, epsilonAnnealDuration);
-        Policy testPolicy = new EpsilonGreedy(gridWorldDQN.dqn, 0.05);
+        SolverDerivedPolicy learningPolicy =
+                new AnnealedEpsilonGreedy(epsilonStart, epsilonEnd, epsilonAnnealDuration);
+        SolverDerivedPolicy testPolicy = new EpsilonGreedy(testEpsilon);
 
         // Setup the learner
         DeepQLearner deepQLearner =
                 new DeepQLearner(gridWorldDQN.domain, gamma, replayStartSize, learningPolicy, gridWorldDQN.dqn);
         deepQLearner.setExperienceReplay(new FixedSizeMemory(memorySize), gridWorldDQN.dqn.batchSize);
+
+        // Set the QProvider for the policies
+        learningPolicy.setSolver(deepQLearner);
+        testPolicy.setSolver(deepQLearner);
 
         // Setup the visualizer
         VisualExplorer exp = new VisualExplorer(
