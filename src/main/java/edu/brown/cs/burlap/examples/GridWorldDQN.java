@@ -38,8 +38,6 @@ import org.bytedeco.javacpp.caffe;
  */
 public class GridWorldDQN {
 
-    static final String SOLVER_FILE = "example_models/grid_world_dqn_solver.prototxt";
-
     static ActionSet actionSet = new ActionSet(new String[]{
             GridWorldDomain.ACTION_NORTH,
             GridWorldDomain.ACTION_SOUTH,
@@ -57,7 +55,7 @@ public class GridWorldDQN {
 
     public DQN dqn;
 
-    public GridWorldDQN(double gamma) {
+    public GridWorldDQN(String solverFile, double gamma) {
 
         //create the domain
         gwdg = new GridWorldDomain(11, 11);
@@ -79,7 +77,7 @@ public class GridWorldDQN {
         //set up the environment for learners algorithms
         env = new SimulatedEnvironment(domain, initialState);
 
-        dqn = new DQN(SOLVER_FILE, actionSet, new NNGridStateConverter(), gamma);
+        dqn = new DQN(solverFile, actionSet, new NNGridStateConverter(), gamma);
     }
 
     public static void main(String args[]) {
@@ -93,11 +91,14 @@ public class GridWorldDQN {
         double testEpsilon = 0.05;
         int epsilonAnnealDuration = 1000000;
 
+        // Caffe solver file
+        String solverFile = "example_models/grid_world_dqn_solver.prototxt";
+
         // Load Caffe
         Loader.load(caffe.Caffe.class);
 
         // Setup the network
-        GridWorldDQN gridWorldDQN = new GridWorldDQN(gamma);
+        GridWorldDQN gridWorldDQN = new GridWorldDQN(solverFile, gamma);
 
         // Create the policies
         SolverDerivedPolicy learningPolicy =

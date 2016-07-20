@@ -1,11 +1,12 @@
 net: "example_models/atari_dqn.prototxt"
+
 solver_type: RMSPROP
-momentum: 0.95
 base_lr: 0.00025
-lr_policy: "inv"
-gamma: 0.0001
-stepsize: 1000000
-max_iter: 2000000
+momentum: 0.95
+rms_decay: 0.95
+delta: 0.01
+lr_policy: "fixed"
+
 display: 50000
 
 solver_mode: GPU

@@ -63,6 +63,7 @@ public class AtariDQN extends TrainingHelper {
         int totalTrainingSteps = 50000000;
 
         // ALE Paths
+        // TODO: Set to appropriate paths for your machine
         String alePath = "/path/to/atari/executable";
         String romPath = "/path/to/atari/rom/file";
 
@@ -118,7 +119,9 @@ public class AtariDQN extends TrainingHelper {
         helper.setTestInterval(100000);
         helper.setNumTestEpisodes(10);
         helper.setMaxEpisodeSteps(20000);
-        helper.enableSnapshots("networks/dqn/pong", 1000000);
+
+        // TODO: create the snapshots directory (or other name)
+        helper.enableSnapshots("snapshots/pong", 1000000);
 
         // Load learning state if resuming
         //helper.loadLearningState("networks/dqn/pong");
