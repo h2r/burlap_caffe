@@ -214,7 +214,7 @@ public class FrameExperienceMemory implements SavableExperienceMemory, StateVect
             int numRead;
             while (pos < frameMemory.limit()) {
                 numRead = (int)Math.min(buffer.length, frameMemory.limit() - pos);
-                frameMemory.position(pos).get(buffer);
+                frameMemory.position(pos).get(buffer, 0, numRead);
                 pos += numRead;
 
                 historyOut.write(buffer, 0, numRead);

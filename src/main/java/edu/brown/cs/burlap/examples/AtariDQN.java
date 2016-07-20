@@ -64,8 +64,8 @@ public class AtariDQN extends TrainingHelper {
 
         // ALE Paths
         // TODO: Set to appropriate paths for your machine
-        String alePath = "/home/maroderi/projects/Arcade-Learning-Environment/ale";
-        String romPath = "/home/maroderi/projects/atari_roms/pong.bin";
+        String alePath = "/path/to/atari/executable";
+        String romPath = "/path/to/atari/rom/file";
 
         // Caffe solver file
         String solverFile = "example_models/atari_dqn_solver.prototxt";
