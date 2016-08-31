@@ -31,9 +31,6 @@ public class DeepQLearner extends ApproximateQLearning {
     public DeepQLearner(SADomain domain, double gamma, int replayStartSize, Policy policy, DQN vfa, StateMapping stateMapping) {
         super(domain, gamma, vfa, stateMapping);
 
-        // Finds backup using previous parameters
-        this.useStaleTarget(10000);
-
         if (replayStartSize > 0) {
             System.out.println(String.format("Starting with random policy for %d frames", replayStartSize));
 

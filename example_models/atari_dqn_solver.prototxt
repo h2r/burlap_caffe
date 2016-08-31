@@ -2,7 +2,6 @@ net: "example_models/atari_dqn.prototxt"
 
 solver_type: RMSPROP
 base_lr: 0.00025
-momentum: 0.95
 rms_decay: 0.95
 delta: 0.01
 lr_policy: "fixed"

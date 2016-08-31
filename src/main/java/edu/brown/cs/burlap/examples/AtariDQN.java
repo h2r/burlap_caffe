@@ -14,6 +14,9 @@ import edu.brown.cs.burlap.gui.ALEVisualizer;
 import edu.brown.cs.burlap.learners.DeepQLearner;
 import edu.brown.cs.burlap.policies.AnnealedEpsilonGreedy;
 import edu.brown.cs.burlap.preprocess.ALEPreProcessor;
+import edu.brown.cs.burlap.testing.DeepQTester;
+import edu.brown.cs.burlap.testing.SimpleTester;
+import edu.brown.cs.burlap.testing.Tester;
 import edu.brown.cs.burlap.vfa.DQN;
 import org.bytedeco.javacpp.Loader;
 
@@ -28,10 +31,10 @@ public class AtariDQN extends TrainingHelper {
     protected FrameExperienceMemory trainingMemory;
     protected FrameExperienceMemory testMemory;
 
-    public AtariDQN(DeepQLearner learner, DQN vfa, Policy testPolicy, ActionSet actionSet, Environment env,
+    public AtariDQN(DeepQLearner learner, DeepQTester tester, DQN vfa, ActionSet actionSet, Environment env,
                     FrameExperienceMemory trainingMemory,
                     FrameExperienceMemory testMemory) {
-        super(learner, vfa, testPolicy, actionSet, env);
+        super(learner, tester, vfa, actionSet, env);
 
         this.trainingMemory = trainingMemory;
         this.testMemory = testMemory;
@@ -53,6 +56,7 @@ public class AtariDQN extends TrainingHelper {
         // (http://www.nature.com/nature/journal/v518/n7540/full/nature14236.html)
         int experienceMemoryLength = 1000000;
         int maxHistoryLength = 4;
+        int staleUpdateFreq = 10000;
         int frameSkip = 4;
         double epsilonStart = 1;
         double epsilonEnd = 0.1;
@@ -107,6 +111,10 @@ public class AtariDQN extends TrainingHelper {
         // Setup the learner
         DeepQLearner deepQLearner = new DeepQLearner(domain, gamma, replayStartSize, learningPolicy, dqn, trainingExperienceMemory);
         deepQLearner.setExperienceReplay(trainingExperienceMemory, dqn.batchSize);
+        deepQLearner.useStaleTarget(staleUpdateFreq);
+
+        // Setup the tester
+        DeepQTester tester = new DeepQTester(testPolicy, testExperienceMemory, testExperienceMemory);
 
         // Set the QProvider for the policies
         learningPolicy.setSolver(deepQLearner);
@@ -114,7 +122,7 @@ public class AtariDQN extends TrainingHelper {
 
         // Setup helper
         TrainingHelper helper =
-                new AtariDQN(deepQLearner, dqn, testPolicy, actionSet, env, trainingExperienceMemory, testExperienceMemory);
+                new AtariDQN(deepQLearner, tester, dqn, actionSet, env, trainingExperienceMemory, testExperienceMemory);
         helper.setTotalTrainingSteps(totalTrainingSteps);
         helper.setTestInterval(100000);
         helper.setNumTestEpisodes(10);

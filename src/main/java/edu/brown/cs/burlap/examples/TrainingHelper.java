@@ -5,17 +5,20 @@ import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.mdp.singleagent.environment.Environment;
 import edu.brown.cs.burlap.action.ActionSet;
+import edu.brown.cs.burlap.experiencereplay.FrameExperienceMemory;
 import edu.brown.cs.burlap.learners.DeepQLearner;
+import edu.brown.cs.burlap.testing.DeepQTester;
+import edu.brown.cs.burlap.testing.Tester;
 import edu.brown.cs.burlap.vfa.DQN;
 
 /**
  * Created by MelRod on 5/28/16.
  */
-public abstract class TrainingHelper {
+public class TrainingHelper {
 
     protected DeepQLearner learner;
+    protected Tester tester;
     protected DQN vfa;
-    protected Policy testPolicy;
 
     protected Environment env;
 
@@ -34,10 +37,10 @@ public abstract class TrainingHelper {
     protected int episodeCounter;
 
 
-    public TrainingHelper(DeepQLearner learner, DQN vfa, Policy testPolicy, ActionSet actionSet, Environment env) {
+    public TrainingHelper(DeepQLearner learner, Tester tester, DQN vfa, ActionSet actionSet, Environment env) {
         this.learner = learner;
         this.vfa = vfa;
-        this.testPolicy = testPolicy;
+        this.tester = tester;
         this.env = env;
         this.actionSet = actionSet;
 
@@ -45,8 +48,8 @@ public abstract class TrainingHelper {
         this.episodeCounter = 0;
     }
 
-    public abstract void prepareForTraining();
-    public abstract void prepareForTesting();
+    public void prepareForTraining() {}
+    public void prepareForTesting() {}
 
     public void setTotalTrainingSteps(int n) {
         totalTrainingSteps = n;
@@ -122,7 +125,7 @@ public abstract class TrainingHelper {
         double totalTestReward = 0;
         for (int n = 1; n <= numTestEpisodes; n++) {
             env.resetEnvironment();
-            Episode e = PolicyUtils.rollout(testPolicy, env, maxEpisodeSteps);
+            Episode e = tester.runTestEpisode(env, maxEpisodeSteps);
 
             double totalReward = 0;
             for (double reward : e.rewardSequence) {
@@ -143,17 +146,5 @@ public abstract class TrainingHelper {
 
     public void loadLearningState(String filePrefix) {
         learner.loadLearningState(filePrefix);
-    }
-
-
-    public static class SimpleTrainer extends TrainingHelper {
-
-        public SimpleTrainer(DeepQLearner learner, DQN vfa, Policy testPolicy, ActionSet actionSet, Environment env) {
-            super(learner, vfa, testPolicy, actionSet, env);
-        }
-        @Override
-        public void prepareForTraining() {}
-        @Override
-        public void prepareForTesting() {}
     }
 }

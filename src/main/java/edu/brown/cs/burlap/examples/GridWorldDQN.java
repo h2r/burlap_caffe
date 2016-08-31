@@ -26,6 +26,9 @@ import burlap.statehashing.simple.SimpleHashableStateFactory;
 import edu.brown.cs.burlap.action.ActionSet;
 import edu.brown.cs.burlap.learners.DeepQLearner;
 import edu.brown.cs.burlap.policies.AnnealedEpsilonGreedy;
+import edu.brown.cs.burlap.testing.DeepQTester;
+import edu.brown.cs.burlap.testing.SimpleTester;
+import edu.brown.cs.burlap.testing.Tester;
 import edu.brown.cs.burlap.vfa.DQN;
 import edu.brown.cs.burlap.vfa.StateVectorizor;
 import org.bytedeco.javacpp.FloatPointer;
@@ -90,6 +93,7 @@ public class GridWorldDQN {
         double epsilonEnd = 0.1;
         double testEpsilon = 0.05;
         int epsilonAnnealDuration = 1000000;
+        int staleUpdateFreq = 10000;
 
         // Caffe solver file
         String solverFile = "example_models/grid_world_dqn_solver.prototxt";
@@ -109,6 +113,10 @@ public class GridWorldDQN {
         DeepQLearner deepQLearner =
                 new DeepQLearner(gridWorldDQN.domain, gamma, replayStartSize, learningPolicy, gridWorldDQN.dqn);
         deepQLearner.setExperienceReplay(new FixedSizeMemory(memorySize), gridWorldDQN.dqn.batchSize);
+        deepQLearner.useStaleTarget(staleUpdateFreq);
+
+        // Setup the tester
+        Tester tester = new SimpleTester(testPolicy);
 
         // Set the QProvider for the policies
         learningPolicy.setSolver(deepQLearner);
@@ -121,8 +129,8 @@ public class GridWorldDQN {
         exp.startLiveStatePolling(33);
 
         // Setup helper
-        TrainingHelper helper = new TrainingHelper.SimpleTrainer(
-                deepQLearner, gridWorldDQN.dqn, testPolicy, actionSet, gridWorldDQN.env);
+        TrainingHelper helper = new TrainingHelper(
+                deepQLearner, tester, gridWorldDQN.dqn, actionSet, gridWorldDQN.env);
         helper.setTotalTrainingSteps(50000000);
         helper.setTestInterval(500000);
         helper.setNumTestEpisodes(5);

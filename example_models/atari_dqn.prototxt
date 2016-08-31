@@ -185,4 +185,5 @@ layer {
   bottom: "filtered_q_values"
   bottom: "target"
   top: "loss"
+  loss_weight: 32
 }

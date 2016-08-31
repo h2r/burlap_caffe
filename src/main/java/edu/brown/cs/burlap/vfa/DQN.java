@@ -110,7 +110,7 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
         }
 
         // construct the solver and network from file
-        this.caffeSolver = FloatSolverRegistry.CreateSolver(solver_param);
+        this.caffeSolver = new FloatRMSPropSolver(solver_param);
         this.caffeNet = caffeSolver.net();
 
         // set the input layers
