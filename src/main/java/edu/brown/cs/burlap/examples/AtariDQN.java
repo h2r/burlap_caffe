@@ -57,14 +57,15 @@ public class AtariDQN extends TrainingHelper {
         int experienceMemoryLength = 1000000;
         int maxHistoryLength = 4;
         int staleUpdateFreq = 10000;
+        double gamma = 0.99;
         int frameSkip = 4;
+        int updateFreq = 4;
         double epsilonStart = 1;
         double epsilonEnd = 0.1;
         int epsilonAnnealDuration = 1000000;
-        double testEpsilon = 0.05;
-        double gamma = 0.99;
         int replayStartSize = 50000;
         int totalTrainingSteps = 50000000;
+        double testEpsilon = 0.05;
 
         // ALE Paths
         // TODO: Set to appropriate paths for your machine
@@ -112,6 +113,7 @@ public class AtariDQN extends TrainingHelper {
         DeepQLearner deepQLearner = new DeepQLearner(domain, gamma, replayStartSize, learningPolicy, dqn, trainingExperienceMemory);
         deepQLearner.setExperienceReplay(trainingExperienceMemory, dqn.batchSize);
         deepQLearner.useStaleTarget(staleUpdateFreq);
+        deepQLearner.setUpdateFreq(updateFreq);
 
         // Setup the tester
         DeepQTester tester = new DeepQTester(testPolicy, testExperienceMemory, testExperienceMemory);

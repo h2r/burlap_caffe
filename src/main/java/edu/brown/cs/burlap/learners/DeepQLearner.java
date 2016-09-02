@@ -25,6 +25,8 @@ public class DeepQLearner extends ApproximateQLearning {
 
     public Policy trainingPolicy;
 
+    public int updateFreq = 1;
+
     public DeepQLearner(SADomain domain, double gamma, int replayStartSize, Policy policy, DQN vfa) {
         this(domain, gamma, replayStartSize, policy, vfa, new ShallowIdentityStateMapping());
     }
@@ -45,6 +47,15 @@ public class DeepQLearner extends ApproximateQLearning {
         }
     }
 
+    /**
+     * Sets the frequency with which the q function is updated.
+     * @param updateFreq the update frequency.
+     */
+    public void setUpdateFreq(int updateFreq){
+        this.updateFreq = updateFreq;
+    }
+
+
     @Override
     public void updateQFunction(List<EnvironmentOutcome> samples) {
 
@@ -60,7 +71,9 @@ public class DeepQLearner extends ApproximateQLearning {
             return;
         }
 
-        ((DQN)vfa).updateQFunction(samples, (DQN)staleVfa);
+        if (totalSteps % updateFreq == 0) {
+            ((DQN)vfa).updateQFunction(samples, (DQN)staleVfa);
+        }
     }
 
     @Override
