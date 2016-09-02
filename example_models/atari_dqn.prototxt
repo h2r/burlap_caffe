@@ -61,6 +61,7 @@ layer {
     num_output: 32
     kernel_size: 8
     stride: 4
+    pad: 1
     weight_filler {
       type: "xavier"
     }
