@@ -11,6 +11,9 @@ import edu.brown.cs.burlap.testing.DeepQTester;
 import edu.brown.cs.burlap.testing.Tester;
 import edu.brown.cs.burlap.vfa.DQN;
 
+import java.io.*;
+import java.nio.file.Path;
+
 /**
  * Created by MelRod on 5/28/16.
  */
@@ -35,6 +38,10 @@ public class TrainingHelper {
 
     protected int stepCounter;
     protected int episodeCounter;
+
+    protected double highestAverageReward = Double.NEGATIVE_INFINITY;
+    protected PrintStream testOutput;
+    protected String resultsPrefix;
 
 
     public TrainingHelper(DeepQLearner learner, Tester tester, DQN vfa, ActionSet actionSet, Environment env) {
@@ -68,8 +75,31 @@ public class TrainingHelper {
     }
 
     public void enableSnapshots(String snapshotPrefix, int snapshotInterval) {
+        File dir = new File(snapshotPrefix);
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException(String.format("Could not create the directory: %s", snapshotPrefix));
+        }
+
         this.snapshotPrefix = snapshotPrefix;
         this.snapshotInterval = snapshotInterval;
+    }
+
+    public void recordResultsTo(String resultsPrefix) {
+        File dir = new File(resultsPrefix);
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException(String.format("Could not create the directory: %s", resultsPrefix));
+        }
+
+        this.resultsPrefix = resultsPrefix;
+
+        try {
+            String fileName = new File(resultsPrefix, "testResults").toString();
+            testOutput = new PrintStream(new BufferedOutputStream(new FileOutputStream(fileName)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+
+            throw new RuntimeException(String.format("Can't open %s", resultsPrefix));
+        }
     }
 
     public void run() {
@@ -112,6 +142,11 @@ public class TrainingHelper {
             }
         }
 
+        if (testOutput != null) {
+            testOutput.printf("Final best: %.2f\n", highestAverageReward);
+            testOutput.flush();
+        }
+
         System.out.println("Done Training!");
     }
 
@@ -136,8 +171,21 @@ public class TrainingHelper {
             totalTestReward += totalReward;
         }
 
-        System.out.println(String.format("Average Test Reward: %.2f", totalTestReward/numTestEpisodes));
+        double averageReward = totalTestReward/numTestEpisodes;
+        if (averageReward > highestAverageReward) {
+            if (resultsPrefix != null) {
+                vfa.snapshot(new File(resultsPrefix, "best_net.caffemodel").toString(),  null);
+            }
+            highestAverageReward = averageReward;
+        }
+
+        System.out.println(String.format("Average Test Reward: %.2f -- highest: %.2f", totalTestReward/numTestEpisodes, highestAverageReward));
         System.out.println();
+
+        if (testOutput != null) {
+            testOutput.printf("Frame %d: %.2f\n", stepCounter, averageReward);
+            testOutput.flush();
+        }
     }
 
     public void saveLearningState(String filePrefix) {

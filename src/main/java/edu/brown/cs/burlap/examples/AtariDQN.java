@@ -11,6 +11,7 @@ import edu.brown.cs.burlap.action.ActionSet;
 import edu.brown.cs.burlap.experiencereplay.FrameExperienceMemory;
 import edu.brown.cs.burlap.gui.ALEVisualExplorer;
 import edu.brown.cs.burlap.gui.ALEVisualizer;
+import edu.brown.cs.burlap.io.PoolingMethod;
 import edu.brown.cs.burlap.learners.DeepQLearner;
 import edu.brown.cs.burlap.policies.AnnealedEpsilonGreedy;
 import edu.brown.cs.burlap.preprocess.ALEPreProcessor;
@@ -27,6 +28,8 @@ import static org.bytedeco.javacpp.caffe.Caffe;
  */
 public class AtariDQN extends TrainingHelper {
 
+    // TODO: set to true if you download our version of ALE and want to replicate the Deepmind results
+    static final boolean TERMINATE_ON_END_LIFE = false;
 
     protected FrameExperienceMemory trainingMemory;
     protected FrameExperienceMemory testMemory;
@@ -42,11 +45,19 @@ public class AtariDQN extends TrainingHelper {
 
     @Override
     public void prepareForTraining() {
+        if (TERMINATE_ON_END_LIFE) {
+            ((ALEEnvironment) env).terminateOnEndLife = true;
+        }
+
         vfa.stateConverter = trainingMemory;
     }
 
     @Override
     public void prepareForTesting() {
+        if (TERMINATE_ON_END_LIFE) {
+            ((ALEEnvironment) env).terminateOnEndLife = false;
+        }
+
         vfa.stateConverter = testMemory;
     }
 
@@ -67,6 +78,14 @@ public class AtariDQN extends TrainingHelper {
         int totalTrainingSteps = 50000000;
         double testEpsilon = 0.05;
 
+        // Testing and recording constants
+        int testInterval = 250000;
+        int numTestEpisodes = 50;
+        int maxEpisodeSteps = 100000;
+        int snapshotInterval = 1000000;
+        String snapshotDirectory = "snapshots/experiment1";
+        String resultsDirectory = "results/experiment1";
+
         // ALE Paths
         // TODO: Set to appropriate paths for your machine
         String alePath = "/path/to/atari/executable";
@@ -79,12 +98,11 @@ public class AtariDQN extends TrainingHelper {
         Loader.load(Caffe.class);
 
         // Create the domain
-        // NOTE: this action subset is for Pong and only has 3 actions
-        ALEDomainGenerator domGen = new ALEDomainGenerator(ALEDomainGenerator.pongActionSet());
+        ALEDomainGenerator domGen = new ALEDomainGenerator(ALEDomainGenerator.saActionSet());
         SADomain domain = domGen.generateDomain();
 
         // Create the ALEEnvironment and visualizer
-        ALEEnvironment env = new ALEEnvironment(alePath, romPath, frameSkip);
+        ALEEnvironment env = new ALEEnvironment(alePath, romPath, frameSkip, PoolingMethod.POOLING_METHOD_MAX);
         ALEVisualExplorer exp = new ALEVisualExplorer(domain, env, ALEVisualizer.create());
         exp.initGUI();
         exp.startLiveStatePolling(1000/60);
@@ -126,12 +144,11 @@ public class AtariDQN extends TrainingHelper {
         TrainingHelper helper =
                 new AtariDQN(deepQLearner, tester, dqn, actionSet, env, trainingExperienceMemory, testExperienceMemory);
         helper.setTotalTrainingSteps(totalTrainingSteps);
-        helper.setTestInterval(100000);
-        helper.setNumTestEpisodes(10);
-        helper.setMaxEpisodeSteps(20000);
-
-        // TODO: create the snapshots directory (or other name)
-        helper.enableSnapshots("snapshots/pong", 1000000);
+        helper.setTestInterval(testInterval);
+        helper.setNumTestEpisodes(numTestEpisodes);
+        helper.setMaxEpisodeSteps(maxEpisodeSteps);
+        helper.enableSnapshots(snapshotDirectory, snapshotInterval);
+        helper.recordResultsTo(resultsDirectory);
 
         // Load learning state if resuming
         //helper.loadLearningState("networks/dqn/pong");
