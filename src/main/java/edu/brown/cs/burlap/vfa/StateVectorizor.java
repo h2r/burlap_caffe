@@ -4,7 +4,9 @@ import burlap.mdp.core.state.State;
 import org.bytedeco.javacpp.FloatPointer;
 
 /**
- * Created by MelRod on 5/27/16.
+ * An interface for converting a state into a float vector to pass through Caffe.
+ *
+ * @author Melrose Roderick.
  */
 public interface StateVectorizor {
 

@@ -24,7 +24,9 @@ import org.bytedeco.javacpp.Loader;
 import static org.bytedeco.javacpp.caffe.Caffe;
 
 /**
- * Created by MelRod on 5/31/16.
+ * A burlap_caffe example on the Atari domain.
+ *
+ * @author Melrose Roderick.
  */
 public class AtariDQN extends TrainingHelper {
 

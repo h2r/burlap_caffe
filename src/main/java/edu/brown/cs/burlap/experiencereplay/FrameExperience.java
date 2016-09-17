@@ -3,7 +3,9 @@ package edu.brown.cs.burlap.experiencereplay;
 import java.io.Serializable;
 
 /**
- * Created by maroderi on 6/29/16.
+ * A tuple for specifying the outcome of executing an action.
+ *
+ * @author Melrose Roderick.
  */
 public class FrameExperience implements Serializable {
 

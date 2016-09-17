@@ -7,7 +7,9 @@ import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
 import burlap.mdp.singleagent.environment.Environment;
 
 /**
- * Created by maroderi on 8/31/16.
+ * A simple implementation of Tester, which just runs the PolicyUtils.rollout.
+ *
+ * @author Melrose Roderick.
  */
 public class SimpleTester implements Tester {
 

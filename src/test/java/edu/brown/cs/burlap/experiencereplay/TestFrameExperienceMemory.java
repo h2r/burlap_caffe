@@ -22,7 +22,9 @@ import static org.bytedeco.javacpp.opencv_core.CV_32F;
 import static org.bytedeco.javacpp.opencv_core.CV_8U;
 
 /**
- * Created by maroderi on 7/19/16.
+ * Unit tests for FrameExperienceMemory.
+ *
+ * @author Melrose Roderick.
  */
 public class TestFrameExperienceMemory {
     FloatPointer input;

@@ -19,7 +19,10 @@ import java.util.Random;
 import static org.bytedeco.javacpp.opencv_core.Mat;
 
 /**
- * Created by maroderi on 6/20/16.
+ * A fixed size memory made specifically for storing vectorized states that overlap with previous states.
+ * For example, if the state is 4 frames from an Atari game.
+ *
+ * @author Melrose Roderick.
  */
 public class FrameExperienceMemory implements SavableExperienceMemory, StateVectorizor, StateMapping, Serializable {
 

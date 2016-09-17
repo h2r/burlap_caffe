@@ -18,19 +18,22 @@ import edu.brown.cs.burlap.vfa.DQN;
 import java.util.List;
 
 /**
- * Created by maroderi on 8/31/16.
+ * A Tester for a DQN, which stores the frames in an ExperienceMemory
+ * so information from previous states can be used if needed.
+ *
+ * @author Melrose Roderick.
  */
 public class DeepQTester implements Tester {
 
     /**
      * The test policy
      */
-    Policy policy;
+    protected Policy policy;
 
     /**
      * The state mapping to convert between states
      */
-    StateMapping stateMapping;
+    protected StateMapping stateMapping;
 
     /**
      * The experiences memory used for updating Q-values

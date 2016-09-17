@@ -15,7 +15,9 @@ import java.io.*;
 import java.nio.file.Path;
 
 /**
- * Created by MelRod on 5/28/16.
+ * A class to coordinate all the steps for training and testing a DQN on a given Domain.
+ *
+ * @author Melrose Roderick.
  */
 public class TrainingHelper {
 

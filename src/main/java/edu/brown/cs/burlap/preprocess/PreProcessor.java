@@ -6,7 +6,10 @@ import org.bytedeco.javacpp.FloatPointer;
 import static org.bytedeco.javacpp.opencv_core.Mat;
 
 /**
- * Created by MelRod on 5/27/16.
+ * An interface for converting an OpenCV matrix to a savable byte array,
+ * then to a float array for running through Caffe.
+ *
+ * @author Melrose Roderick.
  */
 public interface PreProcessor {
     void convertScreenToData(Mat screen, BytePointer data);

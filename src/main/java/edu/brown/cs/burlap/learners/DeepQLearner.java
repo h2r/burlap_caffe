@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by MelRod on 5/24/16.
+ * An extension on the ApproximateQLearning class specifically for using the DQN value function approximator.
+ *
+ * @author Melrose Roderick.
  */
 public class DeepQLearner extends ApproximateQLearning {
 

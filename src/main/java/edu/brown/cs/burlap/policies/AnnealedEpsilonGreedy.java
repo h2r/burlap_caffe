@@ -6,7 +6,9 @@ import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
 
 /**
- * Created by MelRod on 5/4/16.
+ * A EpsilonGready policy that is linearly annealed from epsilonStart to epsilonEnd.
+ *
+ * @author Melrose Roderick.
  */
 public class AnnealedEpsilonGreedy extends EpsilonGreedy implements StatefulPolicy {
 

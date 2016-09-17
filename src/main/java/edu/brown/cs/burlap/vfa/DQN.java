@@ -20,7 +20,9 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.bytedeco.javacpp.caffe.*;
 
 /**
- * Created by MelRod on 5/25/16.
+ * A BURLAP implementation of a Deep Q-Network (DQN).
+ *
+ * @author Melrose Roderick.
  */
 public class DQN implements ParametricFunction.ParametricStateActionFunction, QProvider, Serializable {
 

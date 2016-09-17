@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by MelRod on 5/28/16.
+ * Stores a indexed subset of the Atari actions.
+ *
+ * @author Melrose Roderick.
  */
 public class ActionSet {
 

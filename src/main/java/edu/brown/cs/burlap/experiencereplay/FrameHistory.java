@@ -6,7 +6,9 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by MelRod on 5/27/16.
+ * A state representing a single short-history of frames.
+ *
+ * @author Melrose Roderick.
  */
 public class FrameHistory implements State, Serializable {
 

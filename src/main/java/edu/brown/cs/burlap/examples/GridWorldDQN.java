@@ -37,7 +37,9 @@ import org.bytedeco.javacpp.caffe;
 
 
 /**
- * Created by MelRod on 5/29/16.
+ * A burlap_caffe example on the GridWorld domain.
+ *
+ * @author Melrose Roderick.
  */
 public class GridWorldDQN {
 
