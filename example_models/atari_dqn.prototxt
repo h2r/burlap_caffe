@@ -20,7 +20,7 @@ layer {
   top: "dummy2"
   memory_data_param {
     batch_size: 32
-    channels: 3
+    channels: 18
     height: 1
     width: 1
   }
@@ -34,7 +34,7 @@ layer {
   top: "dummy3"
   memory_data_param {
     batch_size: 32
-    channels: 3
+    channels: 18
     height: 1
     width: 1
   }
@@ -159,7 +159,7 @@ layer {
   bottom: "ip1"
   top: "q_values"
   inner_product_param {
-    num_output: 3
+    num_output: 18
     weight_filler {
       type: "xavier"
     }
