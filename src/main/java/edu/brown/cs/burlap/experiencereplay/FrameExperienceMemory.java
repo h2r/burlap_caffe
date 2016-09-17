@@ -98,13 +98,25 @@ public class FrameExperienceMemory implements SavableExperienceMemory, StateVect
 
     @Override
     public void addExperience(EnvironmentOutcome eo) {
-        FrameHistory o = currentFrameHistory;
-        FrameHistory op = addFrame(((ALEState)eo.op).getScreen());
-        currentFrameHistory = op;
+        // If this is the first frame of the episode, add the o frame.
+        if (currentFrameHistory.historyLength == 0) {
+            currentFrameHistory = addFrame(((ALEState)eo.o).getScreen());
+        }
 
-        experiences[next] = new FrameExperience(o, actionSet.map(eo.a), op, eo.r, eo.terminated);
+        // If this is experience ends in a terminal state,
+        // the terminal frame will never be used so don't add it.
+        FrameHistory op;
+        if (eo.terminated) {
+            op = new FrameHistory(currentFrameHistory.index, 0);
+        } else {
+            op = addFrame(((ALEState)eo.op).getScreen());
+        }
+
+        experiences[next] = new FrameExperience(currentFrameHistory, actionSet.map(eo.a), op, eo.r, eo.terminated);
         next = (next+1) % experiences.length;
         size = Math.min(size+1, experiences.length);
+
+        currentFrameHistory = op;
     }
 
     protected FrameHistory addFrame(Mat screenMat) {

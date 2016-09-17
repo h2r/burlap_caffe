@@ -68,7 +68,7 @@ public class DeepQLearner extends ApproximateQLearning {
                 runningRandomPolicy = false;
 
                 // reset stale update timer
-                updateStaleFunction();
+                this.stepsSinceStale = 1;
             }
 
             return;

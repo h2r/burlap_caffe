@@ -14,7 +14,7 @@ public class FrameHistory implements State, Serializable {
     public int historyLength;
 
 
-    FrameHistory(long index, int historyLength) {
+    public FrameHistory(long index, int historyLength) {
         this.index = index;
         this.historyLength = historyLength;
     }
