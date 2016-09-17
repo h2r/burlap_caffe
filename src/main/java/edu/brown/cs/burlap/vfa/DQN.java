@@ -24,9 +24,6 @@ import static org.bytedeco.javacpp.caffe.*;
  */
 public class DQN implements ParametricFunction.ParametricStateActionFunction, QProvider, Serializable {
 
-    /** If rewards are greater than this or less than the negative, they will be clipped */
-    public static final int REWARD_CLIP = 1;
-
     /** The GPU device to use */
     public int gpuDevice = 0;
 
@@ -54,12 +51,20 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
     /** An object to convert between BURLAP states and NN input */
     public StateVectorizor stateConverter;
 
+    /** If rewards are greater than this or less than the negative, they will be clipped.
+     * Only has effect if greater than 0. */
+    public double rewardClip = 0;
+
+    /** If the final loss gradients are greater than this or less than the negative, they will be clipped.
+     * Only has effect if greater than 0. */
+    public float gradientClip = 0;
+
     public double gamma;
 
     public ActionSet actionSet;
 
 
-    public FloatNet caffeNet;
+    protected FloatNet caffeNet;
     protected FloatSolver caffeSolver;
 
     protected FloatMemoryDataLayer inputLayer;
@@ -147,34 +152,55 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
             stateConverter.vectorizeState(eo.op, primeStateInputs.position(pos));
         }
 
-        // Forward pass states
+        if (gradientClip > 0) {
+            // Forward pass states if we need to clip final gradients
+            inputDataIntoLayers(stateInputs.position(0), dummyInputData, dummyInputData);
+            caffeNet.ForwardPrefilled();
+        }
+
+        // Forward pass on prime states
         staleVfa.inputDataIntoLayers(primeStateInputs.position(0), dummyInputData, dummyInputData);
         staleVfa.caffeNet.ForwardPrefilled();
 
-        // Calculate target values
+        // Calculate target values and fill in action filter
         int numActions = actionSet.size();
         FloatPointer ys = (new FloatPointer(sampleSize * numActions)).zero();
         FloatPointer actionFilter = (new FloatPointer(sampleSize * numActions)).zero();
         for (int i = 0; i < sampleSize; i++) {
             EnvironmentOutcome eo = samples.get(i);
+            int action = actionSet.map(eo.a);
+            int index = i*numActions + action;
             float maxQ = blobMax(staleVfa.qValuesBlob, i);
+            double r = eo.r;
+            float y;
 
             // clip reward
-            double r = eo.r;
-            if (r > REWARD_CLIP) {
-                r = REWARD_CLIP;
-            } else if (r < -REWARD_CLIP) {
-                r = -REWARD_CLIP;
+            if (rewardClip > 0) {
+                if (r > rewardClip) {
+                    r = rewardClip;
+                } else if (r < -rewardClip) {
+                    r = -rewardClip;
+                }
             }
 
-            float y;
+            // calculate target
             if (eo.terminated) {
                 y = (float)r;
             } else {
                 y = (float)(r + gamma*maxQ);
             }
 
-            int index = i*numActions + actionSet.map(eo.a);
+            // clip gradient
+            if (gradientClip > 0) {
+                float q = qValuesBlob.data_at(i, action, 0, 0);
+
+                if (y - q > gradientClip) {
+                    y = q + gradientClip;
+                } else if (y - q < -gradientClip) {
+                    y = q - gradientClip;
+                }
+            }
+
             ys.put(index, y);
             actionFilter.put(index, 1);
         }
@@ -254,8 +280,20 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
         targetLayer.Reset(yData, dummyInputData, batchSize);
     }
 
-    /** Saves the caffe solver state and weights */
+    /**
+     * Saves the caffe solver state and weights.
+     * @param filePrefix the file prefix indicating the location and name of the saved Caffe model and solver.
+     */
     public void saveLearningState(String filePrefix) {
+        snapshot(filePrefix + ".caffemodel", filePrefix + ".solverstate");
+    }
+
+    /**
+     * Save a snapshot of the current Caffe model and solver to locations modelFileName and solverFileName.
+     * @param modelFileName the location to save the model file, or null if you don't want to save the model file.
+     * @param solverFileName the location to save the solver file, or null if you don't want to save the solver file.
+     */
+    public void snapshot(String modelFileName, String solverFileName) {
         caffeSolver.Snapshot();
 
         // get file names
@@ -265,8 +303,17 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
 
         // move Caffe files
         try {
-            Files.move(Paths.get(modelFile), Paths.get(filePrefix + ".caffemodel"), REPLACE_EXISTING);
-            Files.move(Paths.get(solverFile), Paths.get(filePrefix + ".solverstate"), REPLACE_EXISTING);
+            if (modelFileName != null) {
+                Files.move(Paths.get(modelFile), Paths.get(modelFileName), REPLACE_EXISTING);
+            } else {
+                Files.delete(Paths.get(modelFile));
+            }
+
+            if (modelFileName != null) {
+                Files.move(Paths.get(solverFile), Paths.get(solverFileName), REPLACE_EXISTING);
+            } else {
+                Files.delete(Paths.get(solverFile));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
