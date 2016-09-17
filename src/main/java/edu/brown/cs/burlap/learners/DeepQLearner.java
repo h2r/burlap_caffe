@@ -66,11 +66,15 @@ public class DeepQLearner extends ApproximateQLearning {
 
                 setLearningPolicy(trainingPolicy);
                 runningRandomPolicy = false;
+
+                // reset stale update timer
+                updateStaleFunction();
             }
 
             return;
         }
 
+        // only update every updateFreq steps
         if (totalSteps % updateFreq == 0) {
             ((DQN)vfa).updateQFunction(samples, (DQN)staleVfa);
         }
