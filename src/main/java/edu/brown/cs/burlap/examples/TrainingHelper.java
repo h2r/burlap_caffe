@@ -1,18 +1,13 @@
 package edu.brown.cs.burlap.examples;
 
-import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
 import burlap.mdp.singleagent.environment.Environment;
 import edu.brown.cs.burlap.action.ActionSet;
-import edu.brown.cs.burlap.experiencereplay.FrameExperienceMemory;
 import edu.brown.cs.burlap.learners.DeepQLearner;
-import edu.brown.cs.burlap.testing.DeepQTester;
 import edu.brown.cs.burlap.testing.Tester;
 import edu.brown.cs.burlap.vfa.DQN;
 
 import java.io.*;
-import java.nio.file.Path;
 
 /**
  * A class to coordinate all the steps for training and testing a DQN on a given Domain.

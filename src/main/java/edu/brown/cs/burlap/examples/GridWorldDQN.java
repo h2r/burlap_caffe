@@ -26,7 +26,6 @@ import burlap.statehashing.simple.SimpleHashableStateFactory;
 import edu.brown.cs.burlap.action.ActionSet;
 import edu.brown.cs.burlap.learners.DeepQLearner;
 import edu.brown.cs.burlap.policies.AnnealedEpsilonGreedy;
-import edu.brown.cs.burlap.testing.DeepQTester;
 import edu.brown.cs.burlap.testing.SimpleTester;
 import edu.brown.cs.burlap.testing.Tester;
 import edu.brown.cs.burlap.vfa.DQN;

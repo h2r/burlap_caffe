@@ -1,21 +1,14 @@
 package edu.brown.cs.burlap.testing;
 
 import burlap.behavior.policy.Policy;
-import burlap.behavior.policy.RandomPolicy;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.experiencereplay.ExperienceMemory;
-import burlap.behavior.singleagent.learning.experiencereplay.FixedSizeMemory;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
 import burlap.mdp.auxiliary.StateMapping;
-import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
-import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
-import edu.brown.cs.burlap.vfa.DQN;
-
-import java.util.List;
 
 /**
  * A Tester for a DQN, which stores the frames in an ExperienceMemory

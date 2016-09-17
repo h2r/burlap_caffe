@@ -3,7 +3,6 @@ package edu.brown.cs.burlap.testing;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.PolicyUtils;
 import burlap.behavior.singleagent.Episode;
-import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
 import burlap.mdp.singleagent.environment.Environment;
 
 /**

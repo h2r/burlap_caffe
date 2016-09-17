@@ -1,7 +1,6 @@
 package edu.brown.cs.burlap.examples;
 
 import burlap.behavior.policy.EpsilonGreedy;
-import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.SolverDerivedPolicy;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.Environment;
@@ -16,8 +15,6 @@ import edu.brown.cs.burlap.learners.DeepQLearner;
 import edu.brown.cs.burlap.policies.AnnealedEpsilonGreedy;
 import edu.brown.cs.burlap.preprocess.ALEPreProcessor;
 import edu.brown.cs.burlap.testing.DeepQTester;
-import edu.brown.cs.burlap.testing.SimpleTester;
-import edu.brown.cs.burlap.testing.Tester;
 import edu.brown.cs.burlap.vfa.DQN;
 import org.bytedeco.javacpp.Loader;
 
