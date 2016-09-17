@@ -49,9 +49,13 @@ We provide two sets of example code within the project.
 The first, `AtariDQN`, is the same architecture as DeepMind's DQN
 with the same hyper-parameters as specified in their [nature paper]
 (http://www.nature.com/nature/journal/v518/n7540/full/nature14236.html).
+
+To run this code, you will need to ALE.
+To install ALE, follow the instructions on our [burlap_ale repository](https://github.com/h2r/burlap_ale).
+
 NOTE: You may need to increase the Java max memory size to run this example.
 To do so, add `-Xmx8192m` as a Java VM argument (this sets the max memory
 to 8GB).
 
-The second, `GridWorldDQN`, is a simple DQN implementation of a
+The second, `GridWorldDQN`, is a simple DQN implementation for a
 built-in BURLAP domain.
