@@ -49,6 +49,7 @@ public class TestFrameExperienceMemory {
         BytePointer data6 = new BytePointer((byte)10, (byte)11);
         BytePointer data7 = new BytePointer((byte)12, (byte)13);
 
+        opencv_core.Mat frame0 = new opencv_core.Mat(1, 2, CV_8U, data0);
         opencv_core.Mat frame1 = new opencv_core.Mat(1, 2, CV_8U, data1);
         opencv_core.Mat frame2 = new opencv_core.Mat(1, 2, CV_8U, data2);
         opencv_core.Mat frame3 = new opencv_core.Mat(1, 2, CV_8U, data3);
@@ -57,6 +58,7 @@ public class TestFrameExperienceMemory {
         opencv_core.Mat frame6 = new opencv_core.Mat(1, 2, CV_8U, data6);
         opencv_core.Mat frame7 = new opencv_core.Mat(1, 2, CV_8U, data7);
 
+        ALEState aleState0 = new ALEState(frame0);
         ALEState aleState1 = new ALEState(frame1);
         ALEState aleState2 = new ALEState(frame2);
         ALEState aleState3 = new ALEState(frame3);
@@ -73,13 +75,13 @@ public class TestFrameExperienceMemory {
 
         FrameExperienceMemory experienceMemory = new FrameExperienceMemory(5, 2, new TestPreprocessor(2), actionSet);
         FrameHistory state0 = experienceMemory.currentFrameHistory;
-        experienceMemory.addExperience(new EnvironmentOutcome(null, action0, aleState1, 0, false));
+        experienceMemory.addExperience(new EnvironmentOutcome(aleState0, action0, aleState1, 0, false));
         FrameHistory state1 = experienceMemory.currentFrameHistory;
-        experienceMemory.addExperience(new EnvironmentOutcome(null, action0, aleState2, 0, false));
+        experienceMemory.addExperience(new EnvironmentOutcome(aleState1, action0, aleState2, 0, false));
         FrameHistory state2 = experienceMemory.currentFrameHistory;
-        experienceMemory.addExperience(new EnvironmentOutcome(null, action0, aleState3, 0, false));
+        experienceMemory.addExperience(new EnvironmentOutcome(aleState2, action0, aleState3, 0, false));
         FrameHistory state3 = experienceMemory.currentFrameHistory;
-        experienceMemory.addExperience(new EnvironmentOutcome(null, action0, aleState4, 0, false));
+        experienceMemory.addExperience(new EnvironmentOutcome(aleState3, action0, aleState4, 0, false));
         FrameHistory state4 = experienceMemory.currentFrameHistory;
 
         compare(state0, experienceMemory, new BytePointer[]{data0, data0}, 2);
@@ -88,11 +90,11 @@ public class TestFrameExperienceMemory {
         compare(state3, experienceMemory, new BytePointer[]{data2, data3}, 2);
         compare(state4, experienceMemory, new BytePointer[]{data3, data4}, 2);
 
-        experienceMemory.addExperience(new EnvironmentOutcome(null, action0, aleState5, 0, false));
+        experienceMemory.addExperience(new EnvironmentOutcome(aleState4, action0, aleState5, 0, false));
         FrameHistory state5 = experienceMemory.currentFrameHistory;
-        experienceMemory.addExperience(new EnvironmentOutcome(null, action0, aleState6, 0, false));
+        experienceMemory.addExperience(new EnvironmentOutcome(aleState5, action0, aleState6, 0, false));
         FrameHistory state6 = experienceMemory.currentFrameHistory;
-        experienceMemory.addExperience(new EnvironmentOutcome(null, action0, aleState7, 0, false));
+        experienceMemory.addExperience(new EnvironmentOutcome(aleState6, action0, aleState7, 0, false));
         FrameHistory state7 = experienceMemory.currentFrameHistory;
 
         compare(state3, experienceMemory, new BytePointer[]{data2, data3}, 2);
@@ -129,6 +131,7 @@ public class TestFrameExperienceMemory {
 
         List<FrameHistory> states = new ArrayList<>();
 
+        ALEState prevAleState = null;
         for (int n = 0; n < 100; n++) {
             for (int i = 0; i < replaySize; i++) {
                 BytePointer data = new BytePointer(frameSize);
@@ -142,22 +145,27 @@ public class TestFrameExperienceMemory {
 
                 opencv_core.Mat frame = new opencv_core.Mat(1, frameSize, CV_8U, data);
                 ALEState aleState = new ALEState(frame);
-                experienceMemory.addExperience(new EnvironmentOutcome(null, action0, aleState, 0, false));
-                FrameHistory state = experienceMemory.currentFrameHistory;
 
-                compare(state, experienceMemory, dataList.toArray(new BytePointer[history]), frameSize);
+                if (prevAleState != null) {
+                    experienceMemory.addExperience(new EnvironmentOutcome(prevAleState, action0, aleState, 0, false));
+                    FrameHistory state = experienceMemory.currentFrameHistory;
 
-                if (i < dataListList.size()) {
-                    dataListList.set(i, new ArrayList<>(dataList));
-                    states.set(i, state);
-                } else {
-                    dataListList.add(new ArrayList<>(dataList));
-                    states.add(state);
+                    compare(state, experienceMemory, dataList.toArray(new BytePointer[history]), frameSize);
+
+                    if (i < dataListList.size()) {
+                        dataListList.set(i, new ArrayList<>(dataList));
+                        states.set(i, state);
+                    } else {
+                        dataListList.add(new ArrayList<>(dataList));
+                        states.add(state);
+                    }
+
+                    for (int k = 0; k < states.size(); k++) {
+                        compare(states.get(k), experienceMemory, dataListList.get(k).toArray(new BytePointer[history]), frameSize);
+                    }
                 }
 
-                for (int k = 0; k < states.size(); k++) {
-                    compare(states.get(k), experienceMemory, dataListList.get(k).toArray(new BytePointer[history]), frameSize);
-                }
+                prevAleState = aleState;
             }
         }
     }

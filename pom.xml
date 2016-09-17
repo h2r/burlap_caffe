@@ -9,7 +9,7 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <burlap.version>3.0.1-SNAPSHOT</burlap.version>
+        <burlap.version>3.0.1</burlap.version>
     </properties>
 
     <name>burlap_caffe</name>
