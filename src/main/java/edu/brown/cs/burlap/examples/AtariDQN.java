@@ -45,7 +45,7 @@ public class AtariDQN extends TrainingHelper {
     @Override
     public void prepareForTraining() {
         if (TERMINATE_ON_END_LIFE) {
-            ((ALEEnvironment) env).terminateOnEndLife = true;
+            ((ALEEnvironment) env).setTerminateOnEndLife(true);
         }
 
         vfa.stateConverter = trainingMemory;
@@ -54,7 +54,7 @@ public class AtariDQN extends TrainingHelper {
     @Override
     public void prepareForTesting() {
         if (TERMINATE_ON_END_LIFE) {
-            ((ALEEnvironment) env).terminateOnEndLife = false;
+            ((ALEEnvironment) env).setTerminateOnEndLife(false);
         }
 
         vfa.stateConverter = testMemory;
@@ -74,6 +74,7 @@ public class AtariDQN extends TrainingHelper {
         double epsilonEnd = 0.1;
         int epsilonAnnealDuration = 1000000;
         int replayStartSize = 50000;
+        int noopMax = 30;
         int totalTrainingSteps = 50000000;
         double testEpsilon = 0.05;
 
@@ -82,7 +83,7 @@ public class AtariDQN extends TrainingHelper {
         int totalTestSteps = 125000;
         int maxEpisodeSteps = 100000;
         int snapshotInterval = 1000000;
-        String snapshotDirectory = "snapshots/experiment1";
+        String snapshotPrefix = "snapshots/experiment1";
         String resultsDirectory = "results/experiment1";
 
         // ALE Paths
@@ -102,6 +103,7 @@ public class AtariDQN extends TrainingHelper {
 
         // Create the ALEEnvironment and visualizer
         ALEEnvironment env = new ALEEnvironment(alePath, romPath, frameSkip, PoolingMethod.POOLING_METHOD_MAX);
+        env.setRandomNoopMax(noopMax);
         ALEVisualExplorer exp = new ALEVisualExplorer(domain, env, ALEVisualizer.create());
         exp.initGUI();
         exp.startLiveStatePolling(1000/60);
@@ -142,7 +144,7 @@ public class AtariDQN extends TrainingHelper {
         helper.setTestInterval(testInterval);
         helper.setTotalTestSteps(totalTestSteps);
         helper.setMaxEpisodeSteps(maxEpisodeSteps);
-        helper.enableSnapshots(snapshotDirectory, snapshotInterval);
+        helper.enableSnapshots(snapshotPrefix, snapshotInterval);
         helper.recordResultsTo(resultsDirectory);
         //helper.verbose = true;
 

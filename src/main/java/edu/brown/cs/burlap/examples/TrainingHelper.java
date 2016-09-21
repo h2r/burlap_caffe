@@ -76,7 +76,8 @@ public class TrainingHelper {
 
     public void enableSnapshots(String snapshotPrefix, int snapshotInterval) {
         File dir = new File(snapshotPrefix);
-        if (!dir.exists() && !dir.mkdirs()) {
+        File parent = dir.getParentFile();
+        if (!parent.exists() && !parent.mkdirs()) {
             throw new RuntimeException(String.format("Could not create the directory: %s", snapshotPrefix));
         }
 
@@ -160,7 +161,7 @@ public class TrainingHelper {
                 testCountDown += testInterval;
 
                 // output training rate
-                System.out.printf("Training rate: %.1f steps/sec\n",
+                System.out.printf("Training rate: %.1f steps/sec\n\n",
                         testInterval/trainingTimeInterval);
 
                 // restart training timer
@@ -223,8 +224,7 @@ public class TrainingHelper {
         }
 
         double testTimeInterval = (System.currentTimeMillis() - testStart)/1000.0;
-        System.out.println(String.format("Average Test Reward: %.2f -- highest: %.2f, Test rate: %.1f\n", averageReward, highestAverageReward, numSteps/testTimeInterval));
-        System.out.println();
+        System.out.printf("Average Test Reward: %.2f -- highest: %.2f, Test rate: %.1f\n\n", averageReward, highestAverageReward, numSteps/testTimeInterval);
 
         if (testOutput != null) {
             testOutput.printf("Frame %d: %.2f\n", stepCounter, averageReward);
