@@ -311,7 +311,7 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
                 Files.delete(Paths.get(modelFile));
             }
 
-            if (modelFileName != null) {
+            if (solverFileName != null) {
                 Files.move(Paths.get(solverFile), Paths.get(solverFileName), REPLACE_EXISTING);
             } else {
                 Files.delete(Paths.get(solverFile));

@@ -52,6 +52,9 @@ with the same hyper-parameters as specified in their [nature paper]
 
 To run this code, you will need to ALE.
 To install ALE, follow the instructions on our [burlap_ale repository](https://github.com/h2r/burlap_ale).
+If you want to replicate Deep-Mind's results,
+be sure to use [our fork of ALE](https://github.com/h2r/Arcade-Learning-Environment),
+and set TERMINATE_ON_END_LIFE to true.
 
 NOTE: You may need to increase the Java max memory size to run this example.
 To do so, add `-Xmx8192m` as a Java VM argument (this sets the max memory

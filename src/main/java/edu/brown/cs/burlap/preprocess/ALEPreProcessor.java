@@ -7,7 +7,7 @@ import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 /**
- * A PreProcessor for the Atari games using Deep-Mind's specifications.
+ * A PreProcessor for the Atari games using DeepMind's specifications.
  *
  * @author Melrose Roderick.
  */

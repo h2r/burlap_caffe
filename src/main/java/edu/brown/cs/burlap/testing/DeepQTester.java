@@ -4,6 +4,7 @@ import burlap.behavior.policy.Policy;
 import burlap.behavior.singleagent.Episode;
 import burlap.behavior.singleagent.learning.experiencereplay.ExperienceMemory;
 import burlap.behavior.singleagent.options.EnvironmentOptionOutcome;
+import burlap.behavior.valuefunction.QProvider;
 import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;

@@ -62,7 +62,7 @@ public class AtariDQN extends TrainingHelper {
 
     public static void main(String[] args) {
 
-        // Learning constants defined in the Deep-Mind Nature paper
+        // Learning constants defined in the DeepMind Nature paper
         // (http://www.nature.com/nature/journal/v518/n7540/full/nature14236.html)
         int experienceMemoryLength = 1000000;
         int maxHistoryLength = 4;
@@ -79,7 +79,7 @@ public class AtariDQN extends TrainingHelper {
 
         // Testing and recording constants
         int testInterval = 250000;
-        int numTestEpisodes = 50;
+        int totalTestSteps = 125000;
         int maxEpisodeSteps = 100000;
         int snapshotInterval = 1000000;
         String snapshotDirectory = "snapshots/experiment1";
@@ -123,8 +123,8 @@ public class AtariDQN extends TrainingHelper {
 
         // Create the policies
         SolverDerivedPolicy learningPolicy =
-                new AnnealedEpsilonGreedy(epsilonStart, epsilonEnd, epsilonAnnealDuration);
-        SolverDerivedPolicy testPolicy = new EpsilonGreedy(testEpsilon);
+                new AnnealedEpsilonGreedy(dqn, epsilonStart, epsilonEnd, epsilonAnnealDuration);
+        SolverDerivedPolicy testPolicy = new EpsilonGreedy(dqn, testEpsilon);
 
         // Setup the learner
         DeepQLearner deepQLearner = new DeepQLearner(domain, gamma, replayStartSize, learningPolicy, dqn, trainingExperienceMemory);
@@ -135,22 +135,19 @@ public class AtariDQN extends TrainingHelper {
         // Setup the tester
         DeepQTester tester = new DeepQTester(testPolicy, testExperienceMemory, testExperienceMemory);
 
-        // Set the QProvider for the policies
-        learningPolicy.setSolver(deepQLearner);
-        testPolicy.setSolver(deepQLearner);
-
         // Setup helper
         TrainingHelper helper =
                 new AtariDQN(deepQLearner, tester, dqn, actionSet, env, trainingExperienceMemory, testExperienceMemory);
         helper.setTotalTrainingSteps(totalTrainingSteps);
         helper.setTestInterval(testInterval);
-        helper.setNumTestEpisodes(numTestEpisodes);
+        helper.setTotalTestSteps(totalTestSteps);
         helper.setMaxEpisodeSteps(maxEpisodeSteps);
         helper.enableSnapshots(snapshotDirectory, snapshotInterval);
         helper.recordResultsTo(resultsDirectory);
+        //helper.verbose = true;
 
-        // Load learning state if resuming
-        //helper.loadLearningState("networks/dqn/pong");
+        // Uncomment this line to load learning state if resuming
+        //helper.loadLearningState(snapshotDirectory);
 
         // Run helper
         helper.run();

@@ -28,7 +28,7 @@ public class TrainingHelper {
     protected int totalTrainingSteps = 10000000;
 
     protected int testInterval = 100000;
-    protected int numTestEpisodes = 10;
+    protected int totalTestSteps = 125000;
 
     protected String snapshotPrefix;
     protected int snapshotInterval = -1;
@@ -39,6 +39,9 @@ public class TrainingHelper {
     protected double highestAverageReward = Double.NEGATIVE_INFINITY;
     protected PrintStream testOutput;
     protected String resultsPrefix;
+
+    /** If true, prints out episode information at the end of every episode */
+    public boolean verbose = false;
 
 
     public TrainingHelper(DeepQLearner learner, Tester tester, DQN vfa, ActionSet actionSet, Environment env) {
@@ -59,8 +62,8 @@ public class TrainingHelper {
         totalTrainingSteps = n;
     }
 
-    public void setNumTestEpisodes(int n) {
-        numTestEpisodes = n;
+    public void setTotalTestSteps(int n) {
+        totalTestSteps = n;
     }
 
     public void setTestInterval(int i) {
@@ -104,25 +107,40 @@ public class TrainingHelper {
         int testCountDown = testInterval;
         int snapshotCountDown = snapshotInterval;
 
+        long trainingStart = System.currentTimeMillis();
+        int trainingSteps = 0;
         while (stepCounter < totalTrainingSteps) {
-            System.out.println(String.format("Training Episode %d at step %d", episodeCounter, stepCounter));
+            long epStartTime = 0;
+            if (verbose) {
+                System.out.println(String.format("Training Episode %d at step %d", episodeCounter, stepCounter));
+                epStartTime = System.currentTimeMillis();
+            }
 
+            // Set variables needed for training
             prepareForTraining();
             env.resetEnvironment();
 
-            long startTime = System.currentTimeMillis();
+            // run learning episode
             Episode ea = learner.runLearningEpisode(env, Math.min(totalTrainingSteps - stepCounter, maxEpisodeSteps));
-            long endTime = System.currentTimeMillis();
-            double timeInterval = (endTime - startTime)/1000.0;
 
+            // add up episode reward
             double totalReward = 0;
             for (double r : ea.rewardSequence) {
                 totalReward += r;
             }
-            System.out.println(String.format("Episode reward: %.2f -- %.1f steps/sec", totalReward, ea.numTimeSteps()/timeInterval));
-            System.out.println();
 
+            if (verbose) {
+                // output episode data
+                long epEndTime = System.currentTimeMillis();
+                double timeInterval = (epEndTime - epStartTime)/1000.0;
+
+                System.out.println(String.format("Episode reward: %.2f -- %.1f steps/sec", totalReward, ea.numTimeSteps()/timeInterval));
+                System.out.println();
+            }
+
+            // take snapshot every snapshotCountDown steps
             stepCounter += ea.numTimeSteps();
+            trainingSteps += ea.numTimeSteps();
             episodeCounter++;
             if (snapshotPrefix != null) {
                 snapshotCountDown -= ea.numTimeSteps();
@@ -132,10 +150,21 @@ public class TrainingHelper {
                 }
             }
 
+            // take test set every testCountDown steps
             testCountDown -= ea.numTimeSteps();
             if (testCountDown <= 0) {
+                double trainingTimeInterval = (System.currentTimeMillis() - trainingStart)/1000.0;
+
+                // run test set
                 runTestSet();
                 testCountDown += testInterval;
+
+                // output training rate
+                System.out.printf("Training rate: %.1f steps/sec\n",
+                        testInterval/trainingTimeInterval);
+
+                // restart training timer
+                trainingStart = System.currentTimeMillis();
             }
         }
 
@@ -149,26 +178,43 @@ public class TrainingHelper {
 
     public void runTestSet() {
 
+        long testStart = System.currentTimeMillis();
+        int numSteps = 0;
+        int numEpisodes = 0;
+
         // Change any learning variables to test values (i.e. experience memory)
         prepareForTesting();
 
         // Run the test policy on test episodes
         System.out.println("Running Test Set...");
         double totalTestReward = 0;
-        for (int n = 1; n <= numTestEpisodes; n++) {
+        while (true) {
             env.resetEnvironment();
-            Episode e = tester.runTestEpisode(env, maxEpisodeSteps);
+            Episode e = tester.runTestEpisode(env, Math.min(maxEpisodeSteps, totalTestSteps - numSteps));
 
             double totalReward = 0;
             for (double reward : e.rewardSequence) {
                 totalReward += reward;
             }
 
-            System.out.println(String.format("%d: Reward = %.2f", n, totalReward));
+            if (verbose) {
+                System.out.println(String.format("%d: Reward = %.2f, Steps = %d", numEpisodes, totalReward, numSteps));
+            }
+
+            numSteps += e.numTimeSteps();
+            if (numSteps >= totalTestSteps) {
+                if (numEpisodes == 0) {
+                    totalTestReward = totalReward;
+                    numEpisodes = 1;
+                }
+                break;
+            }
+
             totalTestReward += totalReward;
+            numEpisodes += 1;
         }
 
-        double averageReward = totalTestReward/numTestEpisodes;
+        double averageReward = totalTestReward/numEpisodes;
         if (averageReward > highestAverageReward) {
             if (resultsPrefix != null) {
                 vfa.snapshot(new File(resultsPrefix, "best_net.caffemodel").toString(),  null);
@@ -176,7 +222,8 @@ public class TrainingHelper {
             highestAverageReward = averageReward;
         }
 
-        System.out.println(String.format("Average Test Reward: %.2f -- highest: %.2f", totalTestReward/numTestEpisodes, highestAverageReward));
+        double testTimeInterval = (System.currentTimeMillis() - testStart)/1000.0;
+        System.out.println(String.format("Average Test Reward: %.2f -- highest: %.2f, Test rate: %.1f\n", averageReward, highestAverageReward, numSteps/testTimeInterval));
         System.out.println();
 
         if (testOutput != null) {

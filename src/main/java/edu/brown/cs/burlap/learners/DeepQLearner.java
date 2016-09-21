@@ -3,8 +3,10 @@ package edu.brown.cs.burlap.learners;
 import burlap.behavior.policy.Policy;
 import burlap.behavior.policy.RandomPolicy;
 import burlap.behavior.singleagent.learning.tdmethods.vfa.ApproximateQLearning;
+import burlap.behavior.valuefunction.QValue;
 import burlap.mdp.auxiliary.StateMapping;
 import burlap.mdp.auxiliary.common.ShallowIdentityStateMapping;
+import burlap.mdp.core.state.State;
 import burlap.mdp.singleagent.SADomain;
 import burlap.mdp.singleagent.environment.EnvironmentOutcome;
 import edu.brown.cs.burlap.experiencereplay.SavableExperienceMemory;
@@ -90,6 +92,13 @@ public class DeepQLearner extends ApproximateQLearning {
             this.staleVfa = this.vfa;
         }
         this.stepsSinceStale = 1;
+    }
+
+    @Override
+    public List<QValue> qValues(State s) {
+        s = this.stateMapping.mapState(s);
+
+        return ((DQN) vfa).qValues(s);
     }
 
     public void saveLearningState(String filePrefix) {

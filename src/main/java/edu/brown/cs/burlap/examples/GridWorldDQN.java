@@ -134,7 +134,7 @@ public class GridWorldDQN {
                 deepQLearner, tester, gridWorldDQN.dqn, actionSet, gridWorldDQN.env);
         helper.setTotalTrainingSteps(50000000);
         helper.setTestInterval(500000);
-        helper.setNumTestEpisodes(5);
+        helper.setTotalTestSteps(125000);
         helper.setMaxEpisodeSteps(10000);
 
         // Run helper

@@ -4,6 +4,7 @@ import burlap.behavior.policy.EpsilonGreedy;
 import burlap.behavior.valuefunction.QProvider;
 import burlap.mdp.core.action.Action;
 import burlap.mdp.core.state.State;
+import edu.brown.cs.burlap.ALEAction;
 
 /**
  * A EpsilonGready policy that is linearly annealed from epsilonStart to epsilonEnd.
