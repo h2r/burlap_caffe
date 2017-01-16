@@ -233,7 +233,9 @@ public class TrainingHelper {
     }
 
     public void saveLearningState(String filePrefix) {
+        System.out.print("Saving learning snapshot... ");
         learner.saveLearningState(filePrefix);
+        System.out.println("Done");
     }
 
     public void loadLearningState(String filePrefix) {

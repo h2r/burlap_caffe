@@ -70,6 +70,8 @@ public class AtariDQN extends TrainingHelper {
         double gamma = 0.99;
         int frameSkip = 4;
         int updateFreq = 4;
+        double rewardClip = 1.0;
+        float gradientClip = 1.0f;
         double epsilonStart = 1;
         double epsilonEnd = 0.1;
         int epsilonAnnealDuration = 1000000;
@@ -122,6 +124,8 @@ public class AtariDQN extends TrainingHelper {
         // Initialize the DQN with the solver file.
         // NOTE: this Caffe architecture is made for 3 actions (the number of actions in Pong)
         DQN dqn = new DQN(solverFile, actionSet, trainingExperienceMemory, gamma);
+        dqn.setRewardClip(rewardClip);
+        dqn.setGradientClip(gradientClip);
 
         // Create the policies
         SolverDerivedPolicy learningPolicy =

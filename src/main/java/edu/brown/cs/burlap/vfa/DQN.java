@@ -66,17 +66,20 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
     public ActionSet actionSet;
 
 
-    protected FloatNet caffeNet;
-    protected FloatSolver caffeSolver;
+    public FloatNet caffeNet;
+    public FloatSolver caffeSolver;
 
-    protected FloatMemoryDataLayer inputLayer;
-    protected FloatMemoryDataLayer filterLayer;
-    protected FloatMemoryDataLayer targetLayer;
+    public FloatMemoryDataLayer inputLayer;
+    public FloatMemoryDataLayer filterLayer;
+    public FloatMemoryDataLayer targetLayer;
 
-    protected FloatPointer stateInputs;
-    protected FloatPointer primeStateInputs;
-    protected FloatPointer dummyInputData;
-    protected FloatBlob qValuesBlob;
+    public FloatPointer stateInputs;
+    public FloatPointer primeStateInputs;
+    public FloatPointer dummyInputData;
+    public FloatBlob qValuesBlob;
+
+    public FloatPointer ys;
+    public FloatPointer actionFilter;
 
     public DQN(String caffeSolverFile, ActionSet actionSet, StateVectorizor stateConverter, double gamma) {
         this.solverFile = caffeSolverFile;
@@ -138,6 +141,14 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
         this.qValuesBlob = caffeNet.blob_by_name(qValuesBlobName);
     }
 
+    public void setRewardClip(double rewardClip) {
+        this.rewardClip = rewardClip;
+    }
+
+    public void setGradientClip(float gradientClip) {
+        this.gradientClip = gradientClip;
+    }
+
     public void updateQFunction(List<EnvironmentOutcome> samples, DQN staleVfa) {
         int sampleSize = samples.size();
         if (sampleSize < batchSize) {
@@ -166,8 +177,8 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
 
         // Calculate target values and fill in action filter
         int numActions = actionSet.size();
-        FloatPointer ys = (new FloatPointer(sampleSize * numActions)).zero();
-        FloatPointer actionFilter = (new FloatPointer(sampleSize * numActions)).zero();
+        ys = (new FloatPointer(sampleSize * numActions)).zero();
+        actionFilter = (new FloatPointer(sampleSize * numActions)).zero();
         for (int i = 0; i < sampleSize; i++) {
             EnvironmentOutcome eo = samples.get(i);
             int action = actionSet.map(eo.a);
@@ -330,7 +341,7 @@ public class DQN implements ParametricFunction.ParametricStateActionFunction, QP
     }
 
     @Override
-    public ParametricFunction copy() {
+    public DQN copy() {
         return new DQN(this);
     }
 

@@ -32,11 +32,11 @@ git clone https://github.com/bytedeco/javacpp-presets
 
 By default, this library does not compile caffe with cuDNN, so we have to change the cppbuild.sh script.
 Replace the javacpp-presets/caffe/cppbuild.sh with the file provided in the instalation_files directory.
-Now run these commands to compile JavaCPP caffe and install it to maven:
+Now run these commands from the javacpp-presets directory to compile JavaCPP caffe and install it to maven:
 
 ```sh
 ./cppbuild.sh install caffe
-mvn install --projects caffe
+mvn clean install --projects caffe
 ```
 
 Now this library should be linked with maven.
@@ -54,7 +54,7 @@ To run this code, you will need to ALE.
 To install ALE, follow the instructions on our [burlap_ale repository](https://github.com/h2r/burlap_ale).
 If you want to replicate Deep-Mind's results,
 be sure to use [our fork of ALE](https://github.com/h2r/Arcade-Learning-Environment),
-and set TERMINATE_ON_END_LIFE to true.
+and set TERMINATE_ON_END_LIFE to true in `AtariDQN`.
 
 NOTE: You may need to increase the Java max memory size to run this example.
 To do so, add `-Xmx8192m` as a Java VM argument (this sets the max memory

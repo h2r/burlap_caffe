@@ -132,6 +132,7 @@ public class FrameExperienceMemory implements SavableExperienceMemory, StateVect
         if (newIndex >= frameHistoryDataSize) {
             // Copy the buffer to the start of the history
             BytePointer frameHistoryCopy = new BytePointer(frameMemory);
+            frameHistoryCopy.limit(frameHistoryCopy.capacity());
             frameMemory.position(0).limit(paddingSize).put(frameHistoryCopy.position(frameHistoryDataSize - paddingSize));
             frameMemory.limit(frameMemory.capacity());
 
@@ -225,7 +226,6 @@ public class FrameExperienceMemory implements SavableExperienceMemory, StateVect
             // write frame history
             long pos = 0;
             byte[] buffer = new byte[10000000];
-            this.frameMemory.get(buffer);
             int numRead;
             while (pos < frameMemory.limit()) {
                 numRead = (int)Math.min(buffer.length, frameMemory.limit() - pos);
